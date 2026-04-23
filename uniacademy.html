@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPDATE — UNIACADEMY</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --deep:        #030b1a;
+  --oltremare:   #061228;
+  --fiber-1:     #00aaff;
+  --fiber-2:     #0055cc;
+  --fiber-3:     #00ddff;
+  --fiber-glow:  #00c8ff;
+  --gold:        #ffd700;
+  --silver:      #a8d4ff;
+  --white:       #e8f4ff;
+  --correct:     #00ff88;
+  --wrong:       #ff3355;
+  --card-bg:     rgba(0,25,70,0.78);
+  --card-border: rgba(0,180,255,0.3);
+  --font-main:   'Kamit','Orbitron',sans-serif;
+  --font-mono:   'Share Tech Mono',monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--deep);
+  font-family:var(--font-main);
+  min-height:100vh;
+  overflow:hidden;
+}
+
+#fiber-canvas{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+}
+
+/* ─── LAYOUT ─── */
+.app{
+  position:relative;z-index:10;
+  width:100%;height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:16px 20px 14px;
+  gap:0;
+}
+
+/* ─── HEADER ─── */
+.header{text-align:center;margin-bottom:18px;}
+
+.header-title{
+  font-family:var(--font-main);
+  font-size:clamp(1.4rem,3.2vw,2.6rem);
+  font-weight:900;letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--white);
+  text-shadow:0 0 22px var(--fiber-1),0 0 50px rgba(0,160,255,0.35);
+  line-height:1;
+}
+.header-title .update-word{color:var(--white);}
+.header-title .sep{color:rgba(0,180,255,0.4);margin:0 0.15em;}
+.header-title .academy-word{color:var(--fiber-1);text-shadow:0 0 30px var(--fiber-1),0 0 60px rgba(0,150,255,0.5);}
+
+.header-sub{
+  font-family:var(--font-mono);
+  font-size:0.62rem;color:rgba(0,180,255,0.55);
+  letter-spacing:0.28em;margin-top:6px;text-transform:uppercase;
+}
+
+/* ─── PUNTEGGIO GLOBALE ─── */
+.score-bar{
+  display:flex;align-items:center;gap:16px;
+  font-family:var(--font-mono);font-size:0.68rem;
+  margin-bottom:14px;
+  padding:7px 20px;
+  background:rgba(0,60,150,0.2);
+  border:1px solid rgba(0,180,255,0.2);
+  border-radius:8px;
+  color:var(--silver);
+  letter-spacing:0.12em;
+}
+.score-bar .total-score{
+  color:var(--gold);font-size:0.85rem;font-weight:700;
+  text-shadow:0 0 12px rgba(255,215,0,0.6);
+}
+.score-bar .label{opacity:0.5;font-size:0.58rem;text-transform:uppercase;}
+
+/* ─── SLIDER STAGE ─── */
+.slider-stage{
+  position:relative;
+  width:100%;max-width:960px;
+  height:440px;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;gap:20px;align-items:stretch;
+  opacity:0;transform:translateX(70px) scale(0.97);
+  transition:opacity 0.5s cubic-bezier(.4,0,.2,1),
+             transform 0.5s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.slide.active{opacity:1;transform:translateX(0) scale(1);pointer-events:all;}
+.slide.exit-left{opacity:0;transform:translateX(-70px) scale(0.97);}
+
+/* ─── CARD INFO ─── */
+.card-info{
+  flex:1.15;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:14px;
+  padding:26px 24px;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 40px rgba(0,100,255,0.1),inset 0 0 50px rgba(0,50,140,0.07);
+  display:flex;flex-direction:column;
+}
+.card-info::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--fiber-1),var(--fiber-3),transparent);
+  animation:glow-line 3.5s ease-in-out infinite;
+}
+@keyframes glow-line{0%,100%{opacity:0.35;}50%{opacity:1;}}
+
+.corso-num{
+  font-family:var(--font-mono);font-size:0.6rem;
+  color:var(--fiber-1);letter-spacing:0.22em;
+  text-transform:uppercase;margin-bottom:8px;opacity:0.55;
+}
+.corso-nome{
+  font-family:var(--font-main);
+  font-size:clamp(1.1rem,2.2vw,1.65rem);
+  font-weight:700;color:var(--white);
+  line-height:1.2;margin-bottom:16px;
+  text-shadow:0 0 28px rgba(0,180,255,0.45);
+}
+
+.sponsor-block{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:rgba(0,80,180,0.15);
+  border-radius:9px;border:1px solid rgba(0,160,255,0.18);
+  margin-bottom:14px;
+}
+.sponsor-logo{
+  width:52px;height:28px;object-fit:contain;
+  filter:brightness(0) invert(1) opacity(0.65);flex-shrink:0;
+}
+.sponsor-info{font-family:var(--font-mono);font-size:0.7rem;color:var(--silver);}
+.sponsor-label{opacity:0.45;font-size:0.56rem;text-transform:uppercase;letter-spacing:0.2em;}
+.sponsor-name{color:var(--fiber-3);font-size:0.8rem;}
+
+.premio-row{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:0.72rem;color:var(--gold);
+}
+
+/* punteggio per corso */
+.corso-score-row{
+  margin-top:auto;padding-top:14px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-size:0.68rem;
+  border-top:1px solid rgba(0,150,255,0.15);
+}
+.corso-score-label{color:rgba(0,180,255,0.5);text-transform:uppercase;letter-spacing:0.15em;}
+.corso-score-val{
+  color:var(--white);font-size:0.9rem;
+  text-shadow:0 0 10px rgba(0,200,255,0.5);
+}
+.corso-score-max{color:rgba(0,180,255,0.4);font-size:0.72rem;}
+.corso-done-badge{
+  margin-left:auto;
+  font-size:0.62rem;letter-spacing:0.15em;
+  padding:3px 9px;border-radius:4px;
+  border:1px solid var(--correct);color:var(--correct);
+  text-transform:uppercase;opacity:0;
+  transition:opacity 0.4s;
+}
+.corso-done-badge.show{opacity:1;box-shadow:0 0 10px rgba(0,255,136,0.3);}
+
+/* ─── CARD QUIZ ─── */
+.card-quiz{
+  flex:1.3;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:14px;
+  padding:20px 18px;
+  backdrop-filter:blur(14px);
+  display:flex;flex-direction:column;
+  box-shadow:0 0 40px rgba(0,100,255,0.08);
+  overflow:hidden;
+  position:relative;
+}
+
+/* progress domande */
+.q-progress{
+  display:flex;gap:5px;margin-bottom:14px;align-items:center;
+}
+.q-pip{
+  height:3px;flex:1;border-radius:2px;
+  background:rgba(0,150,255,0.2);
+  transition:background 0.3s;
+}
+.q-pip.done-correct{background:var(--correct);box-shadow:0 0 6px var(--correct);}
+.q-pip.done-wrong{background:var(--wrong);box-shadow:0 0 6px var(--wrong);}
+.q-pip.current{background:var(--fiber-1);animation:pip-pulse 1s ease-in-out infinite;}
+@keyframes pip-pulse{0%,100%{opacity:0.6;}50%{opacity:1;box-shadow:0 0 8px var(--fiber-1);}}
+
+/* area domanda */
+.q-area{flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+
+.q-header{
+  font-family:var(--font-mono);font-size:0.56rem;
+  color:rgba(0,180,255,0.45);letter-spacing:0.25em;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.q-text{
+  font-family:var(--font-main);
+  font-size:clamp(0.78rem,1.4vw,0.92rem);
+  color:var(--white);line-height:1.55;
+  margin-bottom:14px;flex:1;
+  display:flex;align-items:flex-start;
+}
+
+/* opzioni risposta */
+.q-options{display:flex;flex-direction:column;gap:7px;}
+
+.opt-btn{
+  background:rgba(0,60,150,0.22);
+  border:1px solid rgba(0,160,255,0.28);
+  border-radius:8px;
+  padding:9px 14px;
+  color:var(--silver);
+  font-family:var(--font-mono);
+  font-size:0.72rem;
+  letter-spacing:0.06em;
+  text-align:left;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.opt-btn:not(:disabled):hover{
+  background:rgba(0,100,220,0.35);
+  border-color:var(--fiber-1);
+  color:var(--white);
+  box-shadow:0 0 16px rgba(0,150,255,0.25);
+}
+.opt-btn.correct{
+  background:rgba(0,255,136,0.12);
+  border-color:var(--correct);
+  color:var(--correct);
+  box-shadow:0 0 16px rgba(0,255,136,0.25);
+}
+.opt-btn.wrong{
+  background:rgba(255,50,80,0.12);
+  border-color:var(--wrong);
+  color:var(--wrong);
+}
+.opt-btn:disabled{cursor:default;}
+
+/* feedback */
+.q-feedback{
+  font-family:var(--font-mono);font-size:0.65rem;
+  margin-top:10px;padding:8px 12px;border-radius:7px;
+  line-height:1.45;min-height:36px;
+  opacity:0;transition:opacity 0.3s;
+}
+.q-feedback.show{opacity:1;}
+.q-feedback.fb-correct{
+  background:rgba(0,255,136,0.08);
+  border:1px solid rgba(0,255,136,0.25);
+  color:var(--correct);
+}
+.q-feedback.fb-wrong{
+  background:rgba(255,50,80,0.08);
+  border:1px solid rgba(255,50,80,0.25);
+  color:#ff8099;
+}
+
+/* btn avanza */
+.q-next-btn{
+  margin-top:10px;align-self:flex-end;
+  background:transparent;
+  border:1px solid var(--fiber-1);
+  color:var(--fiber-1);
+  font-family:var(--font-mono);font-size:0.65rem;
+  letter-spacing:0.2em;text-transform:uppercase;
+  padding:7px 18px;border-radius:7px;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:none;
+}
+.q-next-btn:hover{
+  background:rgba(0,150,255,0.2);
+  color:var(--white);box-shadow:0 0 14px rgba(0,150,255,0.35);
+}
+.q-next-btn.visible{display:block;}
+
+/* ── stato completato ── */
+.q-done-state{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;gap:12px;
+  display:none;
+}
+.q-done-state.visible{display:flex;}
+.done-icon{font-size:2.2rem;}
+.done-score-big{
+  font-family:var(--font-main);font-size:2rem;font-weight:900;
+  color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,0.5);
+}
+.done-msg{
+  font-family:var(--font-mono);font-size:0.7rem;
+  color:var(--silver);letter-spacing:0.12em;opacity:0.75;
+}
+.replay-btn{
+  background:transparent;border:1px solid rgba(0,180,255,0.4);
+  color:rgba(0,180,255,0.7);font-family:var(--font-mono);
+  font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;
+  padding:6px 16px;border-radius:6px;cursor:pointer;
+  transition:all 0.2s;margin-top:4px;
+}
+.replay-btn:hover{border-color:var(--fiber-1);color:var(--fiber-1);}
+
+/* ─── COMING SOON CARD ─── */
+.coming-card{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:14px;padding:30px;
+  backdrop-filter:blur(14px);
+  position:relative;overflow:hidden;
+}
+.coming-soon-badge{
+  font-family:var(--font-mono);font-size:0.62rem;
+  letter-spacing:0.22em;color:var(--gold);
+  border:1px solid var(--gold);
+  padding:4px 12px;border-radius:4px;
+  text-transform:uppercase;
+  animation:pulse-gold 2s ease-in-out infinite;
+  margin-top:12px;
+}
+@keyframes pulse-gold{0%,100%{opacity:0.5;}50%{opacity:1;box-shadow:0 0 14px rgba(255,215,0,0.4);}}
+
+/* ─── CORNER DECORATIONS ─── */
+.corner{position:absolute;width:36px;height:36px;border-color:var(--fiber-1);border-style:solid;opacity:0.4;pointer-events:none;}
+.c-tl{top:8px;left:8px;border-width:2px 0 0 2px;border-radius:4px 0 0 0;}
+.c-tr{top:8px;right:8px;border-width:2px 2px 0 0;border-radius:0 4px 0 0;}
+.c-bl{bottom:8px;left:8px;border-width:0 0 2px 2px;border-radius:0 0 0 4px;}
+.c-br{bottom:8px;right:8px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;}
+
+/* ─── NAV ─── */
+.nav-row{
+  display:flex;align-items:center;gap:16px;
+  margin-top:14px;width:100%;max-width:960px;
+}
+.nav-btn{
+  background:rgba(0,60,180,0.22);
+  border:1px solid var(--fiber-1);
+  color:var(--fiber-1);font-family:var(--font-mono);
+  font-size:0.68rem;letter-spacing:0.15em;
+  padding:9px 20px;border-radius:7px;cursor:pointer;
+  text-transform:uppercase;transition:all 0.22s;
+  white-space:nowrap;
+}
+.nav-btn:hover{
+  background:rgba(0,120,255,0.3);color:var(--white);
+  box-shadow:0 0 18px rgba(0,150,255,0.35);border-color:var(--fiber-3);
+}
+.nav-btn:disabled{opacity:0.25;cursor:default;}
+
+.dots{display:flex;gap:7px;align-items:center;flex:1;justify-content:center;}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(0,140,255,0.22);
+  border:1px solid rgba(0,140,255,0.35);
+  cursor:pointer;transition:all 0.3s;
+}
+.dot.active{
+  background:var(--fiber-1);
+  box-shadow:0 0 10px var(--fiber-1);
+  transform:scale(1.35);
+}
+
+.counter{
+  font-family:var(--font-mono);font-size:0.62rem;
+  color:rgba(0,180,255,0.45);letter-spacing:0.18em;white-space:nowrap;
+}
+
+/* scrollbar per card quiz */
+.card-quiz::-webkit-scrollbar{width:3px;}
+.card-quiz::-webkit-scrollbar-thumb{background:rgba(0,150,255,0.3);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<canvas id="fiber-canvas"></canvas>
+
+<div class="app">
+
+  <div class="header">
+    <div class="header-title">
+      <span class="update-word">UPDATE</span>
+      <span class="sep">—</span>
+      <span>UNI<span class="academy-word">ACADEMY</span></span>
+    </div>
+    <div class="header-sub">SISTEMA DI FORMAZIONE · FT-CS NETWORK · CATALOGO ATTIVO</div>
+  </div>
+
+  <div class="score-bar">
+    <span class="label">Punteggio totale</span>
+    <span class="total-score" id="total-score">0</span>
+    <span style="opacity:0.3">/</span>
+    <span id="total-max" style="color:rgba(0,180,255,0.5)">0</span>
+    <span style="margin-left:auto;opacity:0.4;font-size:0.58rem">RISPOSTE CORRETTE</span>
+  </div>
+
+  <div class="slider-stage" id="slider-stage"></div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)">◀ PREC</button>
+    <div class="dots" id="dots"></div>
+    <span class="counter" id="counter">01 / 09</span>
+    <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">SUCC ▶</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATI CORSI COMPLETI
+// ═══════════════════════════════════════════
+const CORSI = [
+  {
+    id:1, nome:"Sicurezza LLM", sponsor:"CyberGuard Italia",
+    premio:"Accesso Alpha Server", data_mod:"10/03/26",
+    logo:"https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png",
+    domande:[
+      {t:"Principale vettore di attacco LLM?",o:["A) Prompt Injection","B) Memoria conversazionale","C) Mancanza DB"],c:"B",s:"La memoria conversazionale induce deriva cognitiva nei modelli."},
+      {t:"Sicurezza hard-enforcement a chi?",o:["A) Backend LLM","B) Utente finale","C) Orchestratore"],c:"C",s:"Delegata a un ente esterno al processo generativo."},
+      {t:"Cos'è il Context Compliance Attack?",o:["A) Manipola cronologia","B) Virus sul server","C) Crittografia"],c:"A",s:"Manipola la cronologia per erodere i vincoli di sicurezza."},
+      {t:"Nel Sandwich, LLM è considerato:",o:["A) Garante sicurezza","B) Motore inaffidabile","C) Filtro in uscita"],c:"B",s:"Motore potente ma inaffidabile, da isolare in sandbox."},
+      {t:"Cosa sfrutta l'Assistant Prefilling?",o:["A) RAG","B) Falso messaggio assistente","C) Shadow AI"],c:"B",s:"Inietta stato deliberativo fittizio per azioni non autorizzate."}
+    ]
+  },
+  {
+    id:2, nome:"QuantumVerse", sponsor:"Quantum Lab",
+    premio:"Visore VR", data_mod:"15/01/26",
+    logo:"https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png",
+    domande:[
+      {t:"Differenza qubit logici e fisici?",o:["A) HW vs SW","B) Logici correggono errori","C) Temperatura"],c:"B",s:"I qubit logici raggruppano fisici instabili per affidabilità."},
+      {t:"Perché proporre 'Qwat' invece di Qubit?",o:["A) Maggiore potenza","B) Evita confusione cubit biblico","C) Acronimo"],c:"B",s:"Qubit genera confusione con l'unità di misura biblica."},
+      {t:"La moneta che ruota simboleggia:",o:["A) Sovrapposizione","B) Errore di calcolo","C) Scelta definita"],c:"A",s:"Coesistenza di diverse possibilità prima della misurazione."},
+      {t:"Funzione principale del Digital Twin?",o:["A) Avatar metaverso","B) Simulare operazioni","C) Sostituire lavoratori"],c:"B",s:"Modello digitale per testare e simulare eventi in sicurezza."},
+      {t:"Lettura Distruttiva significa:",o:["A) Danno hardware","B) Cancellazione privacy","C) Scelta distrugge alternative"],c:"C",s:"La funzione d'onda collassa: le alternative scompaiono."}
+    ]
+  },
+  {
+    id:3, nome:"Terre Rare", sponsor:"EcoMinerals",
+    premio:"Kit Sostenibilità", data_mod:"20/02/26",
+    logo:"https://onewedge.com/wp-content/uploads/2023/12/new-header-3.png",
+    domande:[
+      {t:"Cosa sono le terre rare?",o:["A) 17 elementi chimici","B) Minerali come l'oro","C) Metalli sintetici"],c:"A",s:"Definizione IUPAC: scandio, ittrio e i lantanoidi."},
+      {t:"Rarità geologica delle terre rare?",o:["A) Solo ittrio","B) Diffuse nella crosta","C) Più rare dell'oro"],c:"B",s:"L'oro è mille volte più raro delle terre rare."},
+      {t:"Perché si chiamano 'rare'?",o:["A) Solo in Svezia","B) Difficili da isolare","C) Scoperte nel XXI sec."],c:"B",s:"Difficoltà a trovare giacimenti economicamente convenienti."},
+      {t:"Differenza 'rare' vs 'critiche'?",o:["A) Sinonimi","B) Categoria chimica vs rischio approvvig.","C) Solo geografica"],c:"B",s:"Critiche = risorse con catene di approvvigionamento vulnerabili."},
+      {t:"Uso strategico del Niobio?",o:["A) Gioielli","B) Batterie e chip fotonici","C) Industria alimentare"],c:"B",s:"Strategico per Gigafactory europee e chip fotonici AI."}
+    ]
+  },
+  {
+    id:4, nome:"Public Speaking CVD", sponsor:"Vincos Academy",
+    premio:"Badge Relatore Pro", data_mod:"16/03/26",
+    logo:"https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png",
+    domande:[
+      {t:"Come gestire l'ansia da prestazione?",o:["A) Rilassarsi del tutto","B) Reinterpretare come carica","C) Evitare lo sguardo"],c:"B",s:"I sintomi fisici sono energia utile, non solo paura."},
+      {t:"Cos'è il 'Viaggio A-B' nel Content?",o:["A) Spostamenti fisici","B) Cambio di credenze nel pubblico","C) Ordine slide"],c:"B",s:"Definisce la trasformazione cognitiva del pubblico."},
+      {t:"Regola dell'uno per il Visual?",o:["A) Una sola idea forte","B) Tre punti chiave","C) Massimo dei dati"],c:"A",s:"Evita il sovraccarico cognitivo mantenendo il focus."},
+      {t:"Perché non leggere slide fitte?",o:["A) Il pubblico si annoia","B) Sovraccarico canale verbale","C) Toglie tempo"],c:"B",s:"Il cervello non può leggere e ascoltare contemporaneamente bene."},
+      {t:"Vantaggio delle pause nella Delivery?",o:["A) Consolidare informazioni","B) Mascherare vuoti","C) Aumentare ppm"],c:"A",s:"Le pause sono vitali per l'assorbimento dei concetti."}
+    ]
+  },
+  {
+    id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab",
+    premio:"Prompt Kit Oro", data_mod:"16/03/26",
+    logo:"https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png",
+    domande:[
+      {t:"Cos'è il codice 'sref'?",o:["A) Codice sconto","B) Numero di serie","C) Style reference"],c:"C",s:"Permette di riprodurre uno stile specifico in modo coerente."},
+      {t:"Stile illustrativo + prompt fotografico?",o:["A) Errore sistema","B) Contrasto tra riferimenti","C) Diventa video B/N"],c:"B",s:"Termini come 'close-up' portano riferimenti fotografici contrastanti."},
+      {t:"Iterazioni ideali in Style Creator?",o:["A) Tre iterazioni","B) Cinque iterazioni","C) Dieci iterazioni"],c:"B",s:"Cinque passaggi è il blocco ideale per raffinare lo stile."},
+      {t:"A cosa serve la funzione 'Search'?",o:["A) Cercare l'autore","B) Trovare stili nello spazio latente","C) Download Photoshop"],c:"B",s:"Individua stili simili per caratteristiche matematiche o estetiche."},
+      {t:"Focus di Midjourney vs concorrenti?",o:["A) Strumenti marketing","B) Strada artistica e originalità","C) Solo testi"],c:"B",s:"Privilegia la capacità espressiva unica rispetto all'editing commerciale."}
+    ]
+  },
+  {
+    id:6, nome:"Electric Plazas Economy", sponsor:"One Wedge",
+    premio:"Ricari-card 20€", data_mod:"17/03/26",
+    logo:"https://onewedge.com/wp-content/uploads/2023/12/new-header-3.png",
+    domande:[
+      {t:"Quale standard infrastruttura?",o:["A) ISO 9001","B) Amazon DSP2","C) Autostrade europee"],c:"B",s:"Amazon DSP2 è il più stringente degli standard per recinzioni e sorveglianza."},
+      {t:"Come stabilizza il prezzo?",o:["A) Sussidi statali","B) Acquisti spot","C) Energy Storage"],c:"C",s:"Grandi batterie (fino a 18 MWh) massimizzano il successo dei contratti PPA."},
+      {t:"Occupancy target?",o:["A) 50% degli stalli","B) 75% degli stalli","C) >97% degli stalli"],c:"B",s:"Un margine del 25% di stalli non occupati è un ottimo risultato."},
+      {t:"Provincia o città?",o:["A) Permessi in città","B) Costo dei terreni","C) Potenza della rete"],c:"B",s:"Costi del terreno inferiori a fronte di chilometraggi elevati."},
+      {t:"Perché standard industriali?",o:["A) Uptime","B) Estetica e brand","C) Controllo dei costi"],c:"A",s:"Componenti ridondati, magazzino ricambi locale e manutenzione predittiva."}
+    ]
+  },
+  {
+    id:7, nome:"Future Chip 1", sponsor:"Chip Select",
+    premio:"Free training", data_mod:"27/03/26",
+    logo:"https://www.greenstart.it/wp/wp-content/uploads/2022/02/GS-Chip.png",
+    domande:[
+      {t:"Perché i wafer 300mm richiedono automazione totale?",o:["A) Troppo pesanti e costosi","B) Gli operai guardano i robot","C) I wafer temono il contatto"],c:"A",s:"Un wafer da 12 pollici è fisicamente troppo pesante e prezioso per essere spostato a mano."},
+      {t:"Quale linguaggio è vitale in una Mega-Fab?",o:["A) Latino","B) Python/C++","C) Codice Morse"],c:"B",s:"Nelle fabbriche 300mm lo scripting in Python/C++ è vitale per gestire i sistemi MES."},
+      {t:"Strategia Africa nel mercato dei chip?",o:["A) Esportare sassi colorati","B) Puntare sull'ATP","C) Fabbriche di sabbia"],c:"B",s:"L'ATP è meno costoso delle Fab e sfrutta le materie prime locali."},
+      {t:"Quanti confini attraversa mediamente un chip?",o:["A) 80-90 confini","B) Nessuno, via teletrasporto","C) Solo cucina e salotto"],c:"A",s:"La catena è così frammentata che un chip percorre 25.000 miglia e decine di frontiere."},
+      {t:"Specialità del cluster di Dresda (Silicon Saxony)?",o:["A) Produzione di massa 300mm","B) Cappelli per robot","C) Silicio biologico"],c:"A",s:"Dresda è il leader europeo per volumi massicci e automazione su larga scala."}
+    ]
+  },
+  {
+    id:8, nome:"Future Chip 2", sponsor:"Chip Select",
+    premio:"Free training", data_mod:"27/03/26",
+    logo:"https://www.greenstart.it/wp/wp-content/uploads/2022/02/GS-Chip.png",
+    domande:[
+      {t:"Cos'è l'Epitassia nella produzione di chip GaN?",o:["A) Danza rituale dei tecnici","B) Crescita controllata di cristalli","C) Tipo di pasta sottile"],c:"B",s:"Il GaN deve essere 'cresciuto' sul silicio tramite fisica dello stato solido."},
+      {t:"Quale struttura costa di più per posto di lavoro?",o:["A) Le fabbriche di chip","B) I Data Center (11x di più)","C) Le bancarelle di limonate"],c:"B",s:"I Data Center costano ~628.919$ per lavoro permanente, contro i 55.073$ delle Fab."},
+      {t:"Per cosa è famosa l'Etna Valley (Catania)?",o:["A) Semiconduttori di potenza (SiC/GaN)","B) Raffreddamento con lava","C) Arancini elettronici"],c:"A",s:"Catania è un'eccellenza mondiale per i semiconduttori a larga banda (Wide Bandgap)."},
+      {t:"Cosa si intende per manutenzione 'Hardware-Aware'?",o:["A) Chiedere alla macchina di non rompersi","B) AI per prevedere guasti via sensori","C) Martello di gomma"],c:"B",s:"Si analizzano vibrazioni e temperature con modelli statistici per intervenire prima del guasto."},
+      {t:"Obiettivo del Pilastro 2 del Chips Act europeo?",o:["A) Tornei di scacchi tra CEO","B) Fabbriche 'prime nel loro genere' in Europa","C) Vietare chip nei weekend"],c:"B",s:"Il Pilastro 2 punta alla sicurezza dell'approvvigionamento tramite impianti integrati."}
+    ]
+  },
+  {
+    id:9, nome:"Coming Soon", sponsor:"In arrivo", premio:"TBA",
+    data_mod:"2026", logo:"", domande:[], coming:true
+  }
+];
+
+// ═══════════════════════════════════════════
+//  STATO GLOBALE
+// ═══════════════════════════════════════════
+let current = 0;
+let isAnimating = false;
+
+// Per ogni corso: {qIdx, answers: [{correct,choice}], done}
+const corsoState = CORSI.map(c => ({
+  qIdx: 0,
+  answers: [],
+  done: false
+}));
+
+function getScore(ci) {
+  return corsoState[ci].answers.filter(a => a.correct).length;
+}
+function getTotalScore() {
+  return corsoState.reduce((s,_,i) => s + getScore(i), 0);
+}
+function getTotalMax() {
+  return CORSI.filter(c=>!c.coming).reduce((s,c)=>s+c.domande.length,0);
+}
+
+// ═══════════════════════════════════════════
+//  BUILD UI
+// ═══════════════════════════════════════════
+function buildAll() {
+  const stage = document.getElementById('slider-stage');
+  const dotsEl = document.getElementById('dots');
+  stage.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  CORSI.forEach((c, si) => {
+    const slide = document.createElement('div');
+    slide.className = 'slide' + (si === 0 ? ' active' : '');
+    slide.id = 'slide-' + si;
+
+    if (c.coming) {
+      slide.innerHTML = `
+        <div class="coming-card">
+          <div class="c-tl corner"></div><div class="c-tr corner"></div>
+          <div class="c-bl corner"></div><div class="c-br corner"></div>
+          <div class="corso-num">MISSIONE 09 // CLASSIFICATA</div>
+          <div class="corso-nome" style="font-size:2rem;letter-spacing:0.22em;">? ? ?</div>
+          <div class="coming-soon-badge">★ Coming Soon ★</div>
+          <div style="font-family:var(--font-mono);color:rgba(0,180,255,0.35);font-size:0.65rem;margin-top:18px;letter-spacing:0.15em;line-height:2;">
+            CONTENUTO IN FASE DI SVILUPPO<br>SBLOCCO PREVISTO: 2026
+          </div>
+        </div>`;
+    } else {
+      slide.innerHTML = buildSlideHTML(si);
+    }
+
+    stage.appendChild(slide);
+
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (si === 0 ? ' active' : '');
+    dot.onclick = () => goTo(si);
+    dotsEl.appendChild(dot);
+  });
+
+  document.getElementById('total-max').textContent = getTotalMax();
+  updateCounter();
+}
+
+function buildSlideHTML(si) {
+  const c = CORSI[si];
+  const st = corsoState[si];
+  const nq = c.domande.length;
+  const score = getScore(si);
+
+  return `
+  <div class="card-info">
+    <div class="c-tl corner"></div><div class="c-tr corner"></div>
+    <div class="c-bl corner"></div><div class="c-br corner"></div>
+    <div class="corso-num">MISSIONE ${String(c.id).padStart(2,'0')} // ${c.data_mod}</div>
+    <div class="corso-nome">${c.nome}</div>
+    <div class="sponsor-block">
+      <img class="sponsor-logo" src="${c.logo}" alt="${c.sponsor}" onerror="this.style.display='none'">
+      <div class="sponsor-info">
+        <div class="sponsor-label">Sponsor</div>
+        <div class="sponsor-name">${c.sponsor}</div>
+      </div>
+    </div>
+    <div class="premio-row">🏆 <span>Premio: <strong>${c.premio}</strong></span></div>
+    <div class="corso-score-row">
+      <span class="corso-score-label">Quiz</span>
+      <span class="corso-score-val" id="cscore-${si}">${score}</span>
+      <span class="corso-score-max"> / ${nq}</span>
+      <span class="corso-done-badge${st.done?' show':''}" id="cdone-${si}">✓ Completato</span>
+    </div>
+  </div>
+  <div class="card-quiz" id="cquiz-${si}">
+    ${buildQuizArea(si)}
+  </div>`;
+}
+
+function buildQuizArea(si) {
+  const c = CORSI[si];
+  const st = corsoState[si];
+  const nq = c.domande.length;
+
+  if (st.done) return buildDoneState(si);
+
+  const qi = st.qIdx;
+  const q = c.domande[qi];
+
+  // progress pips
+  const pips = c.domande.map((_,i) => {
+    let cls = '';
+    if (i < st.answers.length) cls = st.answers[i].correct ? 'done-correct' : 'done-wrong';
+    else if (i === qi) cls = 'current';
+    return `<div class="q-pip ${cls}"></div>`;
+  }).join('');
+
+  // opzioni
+  const opts = q.o.map((opt,oi) => {
+    const letter = String.fromCharCode(65+oi);
+    return `<button class="opt-btn" onclick="answerQ(${si},${qi},'${letter}')">${opt}</button>`;
+  }).join('');
+
+  return `
+    <div class="q-progress">${pips}</div>
+    <div class="q-area">
+      <div>
+        <div class="q-header">◈ DOMANDA ${qi+1} DI ${nq}</div>
+        <div class="q-text">${q.t}</div>
+        <div class="q-options" id="qopts-${si}">${opts}</div>
+        <div class="q-feedback" id="qfb-${si}"></div>
+      </div>
+      <button class="q-next-btn" id="qnext-${si}" onclick="nextQ(${si})">
+        ${qi + 1 < nq ? 'PROSSIMA ▶' : 'RISULTATI ▶'}
+      </button>
+    </div>`;
+}
+
+function buildDoneState(si) {
+  const c = CORSI[si];
+  const score = getScore(si);
+  const nq = c.domande.length;
+  const pct = Math.round(score/nq*100);
+  let emoji = pct === 100 ? '🏆' : pct >= 60 ? '⭐' : '🔁';
+  let msg = pct === 100 ? 'PUNTEGGIO PERFETTO!' : pct >= 60 ? 'BUON RISULTATO' : 'RIPROVA PER MIGLIORARE';
+
+  // mini riepilogo
+  const recap = c.domande.map((q,i) => {
+    const a = corsoState[si].answers[i];
+    const icon = a && a.correct ? '<span style="color:var(--correct)">✓</span>' : '<span style="color:var(--wrong)">✗</span>';
+    return `<div style="font-size:0.62rem;font-family:var(--font-mono);color:rgba(180,210,255,0.6);display:flex;gap:6px;margin-bottom:4px;">
+      ${icon}<span>Q${i+1}: ${q.t.substring(0,38)}${q.t.length>38?'…':''}</span>
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;overflow-y:auto;">
+      <div style="text-align:center;padding:8px 0 14px;">
+        <div style="font-size:1.8rem;">${emoji}</div>
+        <div class="done-score-big">${score}<span style="font-size:1rem;color:rgba(255,215,0,0.5)"> / ${nq}</span></div>
+        <div class="done-msg">${msg} — ${pct}%</div>
+      </div>
+      <div style="flex:1;">${recap}</div>
+      <button class="replay-btn" onclick="resetQuiz(${si})">↺ RIGIOCA</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  LOGICA QUIZ
+// ═══════════════════════════════════════════
+function answerQ(si, qi, letter) {
+  const c = CORSI[si];
+  const q = c.domande[qi];
+  const correct = letter === q.c;
+
+  corsoState[si].answers[qi] = { correct, choice: letter };
+
+  // blocca pulsanti
+  const optsCont = document.getElementById('qopts-'+si);
+  if (!optsCont) return;
+  optsCont.querySelectorAll('.opt-btn').forEach((btn, bi) => {
+    btn.disabled = true;
+    const btnLetter = String.fromCharCode(65+bi);
+    if (btnLetter === q.c) btn.classList.add('correct');
+    else if (btnLetter === letter && !correct) btn.classList.add('wrong');
+  });
+
+  // feedback
+  const fb = document.getElementById('qfb-'+si);
+  if (fb) {
+    fb.textContent = (correct ? '✓ Corretto — ' : '✗ Sbagliato — ') + q.s;
+    fb.className = 'q-feedback show ' + (correct ? 'fb-correct' : 'fb-wrong');
+  }
+
+  // mostra next btn
+  const nextBtn = document.getElementById('qnext-'+si);
+  if (nextBtn) nextBtn.classList.add('visible');
+
+  // aggiorna punteggio corso nella card info
+  const cscore = document.getElementById('cscore-'+si);
+  if (cscore) cscore.textContent = getScore(si);
+
+  // aggiorna totale
+  updateTotalScore();
+}
+
+function nextQ(si) {
+  const c = CORSI[si];
+  const st = corsoState[si];
+  st.qIdx++;
+
+  if (st.qIdx >= c.domande.length) {
+    st.done = true;
+    const badge = document.getElementById('cdone-'+si);
+    if (badge) badge.classList.add('show');
+  }
+
+  // rirender quiz area
+  const cquiz = document.getElementById('cquiz-'+si);
+  if (cquiz) cquiz.innerHTML = buildQuizArea(si);
+}
+
+function resetQuiz(si) {
+  corsoState[si] = { qIdx:0, answers:[], done:false };
+  const cquiz = document.getElementById('cquiz-'+si);
+  if (cquiz) cquiz.innerHTML = buildQuizArea(si);
+  const cscore = document.getElementById('cscore-'+si);
+  if (cscore) cscore.textContent = 0;
+  const badge = document.getElementById('cdone-'+si);
+  if (badge) badge.classList.remove('show');
+  updateTotalScore();
+}
+
+function updateTotalScore() {
+  document.getElementById('total-score').textContent = getTotalScore();
+}
+
+// ═══════════════════════════════════════════
+//  NAVIGAZIONE SLIDER
+// ═══════════════════════════════════════════
+function updateCounter() {
+  document.getElementById('counter').textContent =
+    String(current+1).padStart(2,'0') + ' / ' + String(CORSI.length).padStart(2,'0');
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === CORSI.length-1;
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===current));
+}
+
+function goTo(idx) {
+  if (isAnimating || idx === current) return;
+  isAnimating = true;
+  const dir = idx > current ? 1 : -1;
+  const prev = document.getElementById('slide-'+current);
+  const next = document.getElementById('slide-'+idx);
+  prev.classList.remove('active');
+  prev.classList.add('exit-left');
+  next.style.cssText = `transform:translateX(${dir*70}px) scale(0.97);opacity:0;`;
+  next.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.cssText = '';
+    });
+  });
+  setTimeout(() => {
+    prev.classList.remove('exit-left');
+    isAnimating = false;
+  }, 550);
+  current = idx;
+  updateCounter();
+}
+
+function changeSlide(dir) {
+  const n = current + dir;
+  if (n >= 0 && n < CORSI.length) goTo(n);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight') changeSlide(1);
+  if (e.key==='ArrowLeft') changeSlide(-1);
+});
+
+let tStartX = 0;
+document.addEventListener('touchstart', e => { tStartX = e.touches[0].clientX; },{passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tStartX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+buildAll();
+
+// ═══════════════════════════════════════════
+//  FIBER OPTICS CANVAS
+// ═══════════════════════════════════════════
+(function(){
+  const cv = document.getElementById('fiber-canvas');
+  const cx = cv.getContext('2d');
+  let W, H, fibers=[];
+  const rnd = (a,b) => a + Math.random()*(b-a);
+
+  function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
+
+  class Fiber {
+    reset(edge) {
+      this.len = rnd(60,280);
+      this.alpha = rnd(0.04,0.2);
+      this.width = rnd(0.4,2.2);
+      this.hue = 195 + rnd(-10,25);
+      this.pulse = rnd(0,Math.PI*2);
+      this.pulseSpd = rnd(0.008,0.035);
+      this.speed = rnd(0.25,1.1);
+      if (edge===undefined) edge = Math.floor(Math.random()*4);
+      if (edge===0){this.x=rnd(0,W);this.y=-20;this.angle=rnd(Math.PI/5,Math.PI*4/5);}
+      else if(edge===1){this.x=W+20;this.y=rnd(0,H);this.angle=rnd(Math.PI*0.6,Math.PI*1.4);}
+      else if(edge===2){this.x=rnd(0,W);this.y=H+20;this.angle=rnd(-Math.PI*4/5,-Math.PI/5);}
+      else{this.x=-20;this.y=rnd(0,H);this.angle=rnd(-Math.PI/4,Math.PI/4);}
+    }
+    update(){
+      this.x+=Math.cos(this.angle)*this.speed;
+      this.y+=Math.sin(this.angle)*this.speed;
+      this.pulse+=this.pulseSpd;
+      if(this.x<-W*.15||this.x>W*1.15||this.y<-H*.15||this.y>H*1.15) this.reset();
+    }
+    draw(){
+      const a=this.alpha*(0.5+0.5*Math.sin(this.pulse));
+      const x2=this.x+Math.cos(this.angle)*this.len;
+      const y2=this.y+Math.sin(this.angle)*this.len;
+      const g=cx.createLinearGradient(this.x,this.y,x2,y2);
+      g.addColorStop(0,`hsla(${this.hue},100%,65%,0)`);
+      g.addColorStop(0.3,`hsla(${this.hue},100%,70%,${a})`);
+      g.addColorStop(0.7,`hsla(${this.hue},100%,82%,${a*1.5})`);
+      g.addColorStop(1,`hsla(${this.hue},100%,65%,0)`);
+      cx.beginPath();cx.moveTo(this.x,this.y);cx.lineTo(x2,y2);
+      cx.strokeStyle=g;cx.lineWidth=this.width;cx.stroke();
+    }
+  }
+
+  function init(){
+    resize();
+    fibers=Array.from({length:100},(_,i)=>{
+      const f=new Fiber();
+      f.reset(undefined);
+      f.x=rnd(0,W);f.y=rnd(0,H); // scatter iniziale
+      return f;
+    });
+  }
+
+  function loop(){
+    cx.clearRect(0,0,W,H);
+    const bg=cx.createRadialGradient(W*.5,H*.45,0,W*.5,H*.45,Math.max(W,H)*.85);
+    bg.addColorStop(0,'rgba(8,20,60,0.93)');
+    bg.addColorStop(0.45,'rgba(4,12,42,0.97)');
+    bg.addColorStop(1,'rgba(2,5,18,1)');
+    cx.fillStyle=bg; cx.fillRect(0,0,W,H);
+    fibers.forEach(f=>{f.update();f.draw();});
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  init(); loop();
+})();
+</script>
+</body>
+</html>
