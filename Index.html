@@ -545,7 +545,55 @@ const CORSI = [
     ]
   },
   {
-    id:10, nome:"Coming Soon", sponsor:"In arrivo", premio:"TBA",
+    id:10, nome:"Cloud Sovrano", sponsor:"Unidata",
+    premio:"Attestato UniAkai", data_mod:"24/06/26",
+    logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Unidata_logo_%282002-present%29.png",
+    domande:[
+      {t:"Principale vantaggio competitivo di UniCloud sugli hyperscaler USA?",o:["A) Prezzo per gigabyte più basso","B) Giurisdizione italiana e compliance nativa UE, non soggetta al CLOUD Act","C) Server solo in Nord America","D) Assenza di controlli di sicurezza"],c:"B",s:"UniCloud compete su giurisdizione e compliance, non sul prezzo."},
+      {t:"Quale livello di certificazione EUCS è precluso ai soggetti del CLOUD Act USA?",o:["A) Basic","B) Substantial","C) Medium","D) High"],c:"D",s:"Il livello EUCS High richiede l'assenza di soggezione a normative extra-UE."},
+      {t:"Come definisce Unidata l'AI Privata dentro UniCloud?",o:["A) Algoritmi pubblici su server condivisi","B) RAG e agenti AI su dati locali protetti nel perimetro aziendale","C) Versione gratuita di ChatGPT per i dipendenti","D) AI esternalizzata a fornitori extra-UE"],c:"B",s:"L'AI Privata mantiene dati e agenti all'interno del perimetro aziendale."},
+      {t:"Tecnologia raccomandata contro l'harvest-now-decrypt-later?",o:["A) Password a 4 cifre più robuste","B) Firewall hardware tradizionali","C) PQC - Crittografia Post-Quantistica","D) Riconoscimento vocale semplice"],c:"C",s:"La PQC protegge oggi i dati da future decrittazioni quantistiche."},
+      {t:"Valore del Sovereign Cloud EU nel 2025?",o:["A) $650 miliardi","B) $244 miliardi","C) $6,9 miliardi, +83% nel 2026","D) $49 miliardi"],c:"C",s:"Il mercato del Sovereign Cloud EU valeva $6,9 miliardi nel 2025, in forte crescita."}
+    ]
+  },
+  {
+    id:11, nome:"Data Center AI", sponsor:"Unidata",
+    premio:"Attestato UniAkai", data_mod:"24/06/26",
+    logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Unidata_logo_%282002-present%29.png",
+    domande:[
+      {t:"Da quale densità di potenza per rack il raffreddamento ad aria diventa inefficiente?",o:["A) Sopra i 5 kW","B) Sopra i 10 kW","C) Sopra i 20-30 kW","D) Solo sopra i 100 kW"],c:"C",s:"Oltre i 20-30 kW per rack serve liquid cooling per gestire il calore."},
+      {t:"Obiettivo di PUE di UniCenter tramite liquid cooling?",o:["A) PUE < 1,2","B) PUE pari a 2,0","C) PUE tra 1,45 e 1,8","D) Nessun obiettivo previsto"],c:"A",s:"Il liquid cooling permette di puntare a un PUE inferiore a 1,2."},
+      {t:"Collo di bottiglia che impone 24-36 mesi per DC >10 MW in Italia?",o:["A) Scarsità di cemento per le fondamenta","B) Mancanza di tecnici specializzati","C) Richiesta di connessione elettrica a Terna","D) Assenza di fibra in città"],c:"C",s:"L'allacciamento elettrico a Terna è il vincolo temporale principale."},
+      {t:"Materiali critici dipendenti al 100% da importazioni cinesi?",o:["A) Oro e Argento","B) Silicio e Rame","C) Ferro e Alluminio","D) Gallio e Germanio"],c:"D",s:"Gallio e Germanio dipendono interamente dalle importazioni dalla Cina."},
+      {t:"Sistema che riduce la potenza richiesta a Terna con doppia valenza ESG?",o:["A) Generatori a gasolio standard","B) BESS (Battery Energy Storage Systems)","C) Pannelli solari domestici","D) Raffreddamento a ghiaccio secco"],c:"B",s:"I BESS riducono il picco di potenza richiesto e supportano gli obiettivi ESG."}
+    ]
+  },
+  {
+    id:13, nome:"Città Cognitive", sponsor:"Unidata",
+    premio:"Attestato UniAkai", data_mod:"11/08/26",
+    logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Unidata_logo_%282002-present%29.png",
+    domande:[
+      {t:"Cos'è, in sintesi, una \"città cognitiva\"?",o:["A) Una città progettata secondo criteri estetici tradizionali","B) Una città che misura continuamente il proprio funzionamento e si corregge di conseguenza","C) Una città gestita interamente da un'unica azienda privata","D) Una città priva di infrastrutture digitali"],c:"B",s:"Una città cognitiva usa sensori e reti per correggersi da sola, ottimizzando tempi e consumi."},
+      {t:"Perché la rete in fibra italiana viene definita \"sottoutilizzata\"?",o:["A) Copre solo il 10% del territorio nazionale","B) Solo il 10% della capacità passiva esistente è oggi sfruttato","C) È stata costruita di recente e non è ancora attiva","D) È riservata solo alla pubblica amministrazione"],c:"B",s:"Secondo Gartner solo il 10% della capacità passiva delle reti in fibra italiane è oggi sfruttato."},
+      {t:"Perché servono reti come il LoRaWAN se esiste già la fibra?",o:["A) Perché la fibra è troppo costosa da installare","B) Perché il LoRaWAN è più veloce della fibra","C) Perché raggiungono oggetti isolati a lungo raggio con bassissimo consumo, dove la fibra non arriva","D) Perché sostituiscono la necessità di banda larga"],c:"C",s:"Il LoRaWAN raggiunge sensori isolati (es. contatori) con batterie che durano oltre dieci anni."},
+      {t:"Perché l'automobile è considerata un problema per gli agglomerati urbani?",o:["A) Perché inquina più di altri mezzi","B) Perché impone un principio organizzativo che condiziona strade, parcheggi e quartieri","C) Perché non può circolare nelle città cognitive","D) Perché consuma più energia delle colonnine di ricarica"],c:"B",s:"L'auto non è un problema come mezzo, ma come principio che disegna strade e quartieri attorno a sé."},
+      {t:"Perché un centro commerciale o uno stadio ha bisogno di un data center proprio, vicino?",o:["A) Perché il cloud centrale è sempre indisponibile","B) Perché nei picchi di affluenza genera un volume di dati paragonabile a quello di un piccolo comune","C) Perché la legge lo impone per motivi di sicurezza","D) Perché è sempre più economico del cloud"],c:"B",s:"Elaborare i dati sul posto nei picchi evita di sovradimensionare la rete centrale per poche ore a settimana."}
+    ]
+  },
+  {
+    id:14, nome:"Sostenibilità Digitale", sponsor:"Unidata",
+    premio:"Attestato UniAkai", data_mod:"11/08/26",
+    logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Unidata_logo_%282002-present%29.png",
+    domande:[
+      {t:"Quale consumo mondiale dei data center prevede Gartner per il 2026?",o:["A) 447 TWh","B) 565 TWh","C) 175 TWh","D) 31 TWh"],c:"B",s:"Gartner prevede 565 TWh nel 2026, contro i 447 TWh del 2025."},
+      {t:"Quanta energia sarebbe attribuita ai server ottimizzati per l'AI nel 2026?",o:["A) 565 TWh, il 100% del totale","B) 447 TWh, il 79% del totale","C) 175 TWh, circa il 31% del consumo dei data center","D) 14 TWh, una quota marginale"],c:"C",s:"I server AI-optimized assorbirebbero circa 175 TWh, il 31% del consumo elettrico dei data center."},
+      {t:"Perché \"0 tCO₂eq Scope 2 market-based\" non significa zero emissioni complessive?",o:["A) Perché il calcolo include già Scope 1 e Scope 3","B) Perché riguarda solo le emissioni indirette dell'energia acquistata; restano Scope 1 e Scope 3","C) Perché è un dato provvisorio non certificato","D) Perché si riferisce solo alle emissioni dirette da combustione"],c:"B",s:"Lo Scope 2 market-based copre solo l'energia acquistata: Scope 1 e Scope 3 restano fuori dal conteggio."},
+      {t:"Qual è il limite del PUE come indicatore?",o:["A) Misura solo il costo economico dell'energia","B) Misura l'efficienza energetica ma non l'origine dell'elettricità, l'acqua o il carbonio","C) Non è applicabile ai data center italiani","D) Considera solo le emissioni Scope 3"],c:"B",s:"Il PUE descrive l'efficienza energetica del data center, non la sostenibilità complessiva delle sue fonti."},
+      {t:"Che cosa indicano i 14 IRO di Unidata?",o:["A) I nuovi data center pianificati per il 2026","B) Impatti, rischi e opportunità identificati nel 2025 come base della governance","C) I fornitori certificati ISO 14001","D) I chilometri di fibra ottica di nuova posa"],c:"B",s:"I 14 IRO sono Impatti, Rischi e Opportunità identificati nel 2025, base del sistema di governance ESG."}
+    ]
+  },
+  {
+    id:15, nome:"Coming Soon", sponsor:"In arrivo", premio:"TBA",
     data_mod:"2026", logo:"", domande:[], coming:true
   }
 ];
