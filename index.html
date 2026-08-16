@@ -1,37 +1,26 @@
 <!doctype html>
 <html lang="it">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retooling Academy</title></head>
-<body style="margin:0;background:#030b1a;color:#e8f4ff;font-family:Arial,sans-serif"><div id="loading" style="min-height:100vh;display:grid;place-items:center">Caricamento Academy…</div>
+<body style="margin:0;background:#030b1a;color:#e8f4ff;font-family:Arial,sans-serif"><div id="loading" style="min-height:100vh;display:grid;place-items:center">Caricamento Retooling Academy…</div>
 <script>
 (async()=>{
-  const BASE='https://raw.githubusercontent.com/leosorge/academy/d1e751beddc55b39027b7c4cee6c8f44bc2ccaf8/index.html';
-  const VINCOS='https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png';
-  try{
-    let html=await (await fetch(BASE,{cache:'no-store'})).text();
-
-    // Titolo pagina e intestazione.
-    html=html.replace('<title>UPDATE — ACADEMY</title>','<title>Retooling Academy</title>');
-    html=html.replace('<span class="update-word">UPDATE</span>\n      <span class="sep">—</span>\n      <span class="academy-word">ACADEMY</span>','<span class="update-word">RETOOLING</span>\n      <span class="academy-word">ACADEMY</span>');
-
-    // Logo sopra, nome sponsor sotto. Non applicare filtri che possano rendere invisibili i loghi.
-    html=html.replace(/\.sponsor-block\{[\s\S]*?\}\n\.sponsor-logo\{[\s\S]*?\}\n\.sponsor-info\{[\s\S]*?\}\n\.sponsor-label\{[\s\S]*?\}\n\.sponsor-name\{[\s\S]*?\}/,
-`.sponsor-block{\n  display:flex;flex-direction:column;align-items:flex-start;gap:7px;\n  padding:10px 14px;\n  background:rgba(0,80,180,0.15);\n  border-radius:9px;border:1px solid rgba(0,160,255,0.18);\n  margin-bottom:14px;\n}\n.sponsor-logo{\n  width:120px;height:42px;object-fit:contain;object-position:left center;\n  flex-shrink:0;display:block;\n}\n.sponsor-info{font-family:var(--font-mono);font-size:0.7rem;color:var(--silver);}\n.sponsor-label{display:none;}\n.sponsor-name{color:var(--fiber-3);font-size:0.8rem;}`);
-
-    // Midjourney: nome corto e sponsor Vincos. Public Speaking CVD resta invariato.
-    html=html.replace('id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab"','id:5, nome:"Midjourney", sponsor:"Vincos"');
-
-    // Palestra IA va immediatamente dopo Midjourney.
-    const palestra=`  {\n    id:16, nome:"Palestra IA", sponsor:"Vincos",\n    premio:"Allenamento IA", data_mod:"16/08/26",\n    logo:"${VINCOS}",\n    domande:[\n      {t:"Cos'è Palestra IA?",o:["A) Un corso universitario di informatica","B) Una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani","C) Un'app per generare immagini AI","D) Un servizio di assistenza clienti automatizzato"],c:"B",s:"Palestra IA è una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani."},\n      {t:"Di cosa è il \\"naturale complemento\\" la piattaforma?",o:["A) Del podcast \\"AI Italia\\"","B) Del libro \\"Esercizi di Intelligenza Aumentata\\"","C) Di un corso su Udemy","D) Di una newsletter su LinkedIn"],c:"B",s:"È il naturale complemento del libro Esercizi di Intelligenza Aumentata."},\n      {t:"Quali strumenti vengono citati per gli esercizi su video AI?",o:["A) Runway e Kling","B) Photoshop e Illustrator","C) Premiere e DaVinci Resolve","D) Notion e Airtable"],c:"A",s:"Gli strumenti citati sono Runway e Kling."},\n      {t:"Quali strumenti vengono citati per l'automazione di workflow e agenti AI?",o:["A) Salesforce e HubSpot","B) n8n e Zapier","C) Slack e Trello","D) Notion e Asana"],c:"B",s:"Gli strumenti citati sono n8n e Zapier."},\n      {t:"Chi è l'ideatore di Palestra IA?",o:["A) Sam Altman","B) Marco Montemagno","C) Vincenzo Cosenza","D) Luciano Floridi"],c:"C",s:"L'ideatore di Palestra IA è Vincenzo Cosenza."}\n    ]\n  },\n`;
-    const afterMidjourney='  {\n    id:6, nome:"Electric Plazas Economy"';
-    if(!html.includes(afterMidjourney)) throw new Error('Posizione dopo Midjourney non trovata');
-    html=html.replace(afterMidjourney,palestra+afterMidjourney);
-
-    // Coming Soon viene rinumerato per evitare collisione con Palestra IA.
-    html=html.replace('id:16, nome:"Coming Soon"','id:17, nome:"Coming Soon"');
-
-    document.open(); document.write(html); document.close();
-  }catch(e){
-    document.getElementById('loading').innerHTML='<div style="padding:24px;text-align:center">Errore nel caricamento di Academy.<br><small>'+e.message+'</small></div>';
-  }
+ const BASE='https://raw.githubusercontent.com/leosorge/academy/d1e751beddc55b39027b7c4cee6c8f44bc2ccaf8/index.html';
+ const V='https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png';
+ try{
+  let h=await (await fetch(BASE+'?v=3',{cache:'no-store'})).text();
+  h=h.replace(/<title>UPDATE — ACADEMY<\/title>/,'<title>Retooling Academy</title>');
+  h=h.replace('<span class="update-word">UPDATE</span>\n      <span class="sep">—</span>\n      <span class="academy-word">ACADEMY</span>','<span class="update-word">RETOOLING</span> <span class="academy-word">ACADEMY</span>');
+  h=h.replace('.sponsor-block{\n  display:flex;align-items:center;gap:12px;','.sponsor-block{\n  display:flex;flex-direction:column;align-items:flex-start;gap:5px;');
+  h=h.replace('width:52px;height:28px;object-fit:contain;\n  filter:brightness(0) invert(1) opacity(0.65);flex-shrink:0;','width:150px;height:58px;object-fit:contain;object-position:left center;\n  filter:none;flex-shrink:0;');
+  h=h.replace('id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab"','id:5, nome:"Midjourney", sponsor:"Vincos"');
+  const p=`  {\n    id:6, nome:"Palestra IA", sponsor:"Vincos",\n    premio:"Allenamento IA", data_mod:"16/08/26",\n    logo:"${V}",\n    domande:[\n      {t:"Cos'è Palestra IA?",o:["A) Un corso universitario di informatica","B) Una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani","C) Un'app per generare immagini AI","D) Un servizio di assistenza clienti automatizzato"],c:"B",s:"Palestra IA è una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani."},\n      {t:"Di cosa è il \\"naturale complemento\\" la piattaforma?",o:["A) Del podcast \\"AI Italia\\"","B) Del libro \\"Esercizi di Intelligenza Aumentata\\"","C) Di un corso su Udemy","D) Di una newsletter su LinkedIn"],c:"B",s:"È il naturale complemento del libro Esercizi di Intelligenza Aumentata."},\n      {t:"Quali strumenti vengono citati per gli esercizi su video AI?",o:["A) Runway e Kling","B) Photoshop e Illustrator","C) Premiere e DaVinci Resolve","D) Notion e Airtable"],c:"A",s:"Gli strumenti citati sono Runway e Kling."},\n      {t:"Quali strumenti vengono citati per l'automazione di workflow e agenti AI?",o:["A) Salesforce e HubSpot","B) n8n e Zapier","C) Slack e Trello","D) Notion e Asana"],c:"B",s:"Gli strumenti citati sono n8n e Zapier."},\n      {t:"Chi è l'ideatore di Palestra IA?",o:["A) Sam Altman","B) Marco Montemagno","C) Vincenzo Cosenza","D) Luciano Floridi"],c:"C",s:"L'ideatore di Palestra IA è Vincenzo Cosenza."}\n    ]\n  },\n`;
+  const after='  {\n    id:6, nome:"Electric Plazas Economy"';
+  if(!h.includes(after)) throw new Error('Punto di inserimento non trovato');
+  h=h.replace(after,p+'  {\n    id:7, nome:"Electric Plazas Economy"');
+  // rinumera solo le missioni successive; Public Speaking (id 4) resta intatto
+  for(let n=15;n>=7;n--) h=h.replace('id:'+n+', nome:', 'id:'+(n+1)+', nome:');
+  h=h.replace('id:16, nome:"Coming Soon"','id:17, nome:"Coming Soon"');
+  document.open();document.write(h);document.close();
+ }catch(e){document.getElementById('loading').innerHTML='Errore: '+e.message;}
 })();
 </script></body></html>
