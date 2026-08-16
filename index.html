@@ -1,4 +1,6 @@
+/* ─── COVER PAGE - INDEX 16/08/26 ─── */
 /* ─── CYBERSECURITY 2029 16/08/26 ─── */
+
 
 <!DOCTYPE html>
 <html lang="it">
@@ -95,6 +97,52 @@ body{
   position:relative;
   width:100%;max-width:960px;
   height:440px;
+}
+
+/* ─── INDICE ─── */
+.index-page{
+  display:none;
+  width:100%;max-width:960px;height:495px;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:14px;
+  padding:22px 24px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 40px rgba(0,100,255,0.1);
+  overflow-y:auto;
+}
+.index-page.visible{display:block;}
+.index-head,.index-row{
+  display:grid;
+  grid-template-columns:64px minmax(220px,1.4fr) minmax(130px,.8fr) minmax(150px,1fr);
+  gap:16px;align-items:center;
+}
+.index-head{
+  position:sticky;top:-22px;z-index:2;
+  padding:12px 10px;
+  background:rgba(3,11,26,.96);
+  border-bottom:1px solid rgba(0,180,255,.35);
+  font-family:var(--font-mono);font-size:.58rem;
+  color:rgba(0,180,255,.6);letter-spacing:.16em;text-transform:uppercase;
+}
+.index-row{
+  padding:11px 10px;
+  border-bottom:1px solid rgba(0,150,255,.12);
+  font-family:var(--font-mono);font-size:.68rem;color:var(--silver);
+}
+.index-num{color:var(--fiber-3);font-size:.8rem;letter-spacing:.12em;}
+.index-link{
+  border:0;background:transparent;padding:0;
+  color:var(--white);font:inherit;text-align:left;cursor:pointer;
+}
+.index-link:hover{color:var(--fiber-3);text-shadow:0 0 10px rgba(0,200,255,.5);}
+.index-sponsor{color:var(--fiber-3);}
+.index-premio{color:var(--gold);}
+.index-page::-webkit-scrollbar{width:4px;}
+.index-page::-webkit-scrollbar-thumb{background:rgba(0,150,255,.35);border-radius:3px;}
+@media(max-width:700px){
+  .index-head,.index-row{grid-template-columns:46px minmax(150px,1fr);}
+  .index-head span:nth-child(n+3),.index-sponsor,.index-premio{display:none;}
 }
 
 .slide{
@@ -414,7 +462,7 @@ body{
     <div class="header-sub">SISTEMA DI FORMAZIONE · FT-CS NETWORK · CATALOGO ATTIVO</div>
   </div>
 
-  <div class="score-bar">
+  <div class="score-bar" id="score-bar">
     <span class="label">Punteggio totale</span>
     <span class="total-score" id="total-score">0</span>
     <span style="opacity:0.3">/</span>
@@ -424,7 +472,15 @@ body{
 
   <div class="slider-stage" id="slider-stage"></div>
 
-  <div class="nav-row">
+  <div class="index-page" id="index-page">
+    <div class="index-head">
+      <span>N.</span><span>Quiz</span><span>Sponsor</span><span>Premio</span>
+    </div>
+    <div id="index-list"></div>
+  </div>
+
+  <div class="nav-row" id="nav-row">
+    <button class="nav-btn" id="btn-index" onclick="showIndex()">INDICE</button>
     <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)">◀ PREC</button>
     <div class="dots" id="dots"></div>
     <span class="counter" id="counter">01 / 09</span>
@@ -617,6 +673,7 @@ const CORSI = [
 // ═══════════════════════════════════════════
 let current = 0;
 let isAnimating = false;
+let indexVisible = false;
 
 // Per ogni corso: {qIdx, answers: [{correct,choice}], done}
 const corsoState = CORSI.map(c => ({
@@ -674,7 +731,51 @@ function buildAll() {
   });
 
   document.getElementById('total-max').textContent = getTotalMax();
+  buildIndex();
   updateCounter();
+}
+
+function buildIndex() {
+  const list = document.getElementById('index-list');
+  list.innerHTML = CORSI.map((c, si) => ({c,si})).filter(x => !x.c.coming).map((x, i) => `
+    <div class="index-row">
+      <span class="index-num">${String(i+1).padStart(2,'0')}</span>
+      <button class="index-link" onclick="openFromIndex(${x.si})">${x.c.nome}</button>
+      <span class="index-sponsor">${x.c.sponsor}</span>
+      <span class="index-premio">${x.c.premio}</span>
+    </div>`).join('');
+}
+
+function showIndex() {
+  indexVisible = true;
+  document.getElementById('score-bar').style.display = 'none';
+  document.getElementById('slider-stage').style.display = 'none';
+  document.getElementById('index-page').classList.add('visible');
+  document.getElementById('btn-index').textContent = 'CHIUDI INDICE';
+  document.getElementById('btn-index').onclick = hideIndex;
+  document.getElementById('btn-prev').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('dots').style.visibility = 'hidden';
+  document.getElementById('counter').textContent = 'INDICE';
+}
+
+function hideIndex() {
+  indexVisible = false;
+  document.getElementById('score-bar').style.display = '';
+  document.getElementById('slider-stage').style.display = '';
+  document.getElementById('index-page').classList.remove('visible');
+  document.getElementById('btn-index').textContent = 'INDICE';
+  document.getElementById('btn-index').onclick = showIndex;
+  document.getElementById('btn-prev').style.display = '';
+  document.getElementById('btn-next').style.display = '';
+  document.getElementById('dots').style.visibility = '';
+  updateCounter();
+}
+
+function openFromIndex(si) {
+  const previous = current;
+  hideIndex();
+  if (si !== previous) goTo(si);
 }
 
 function buildSlideHTML(si) {
@@ -899,6 +1000,7 @@ document.addEventListener('touchend', e => {
 });
 
 buildAll();
+showIndex();
 
 // ═══════════════════════════════════════════
 //  FIBER OPTICS CANVAS
