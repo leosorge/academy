@@ -7,7 +7,7 @@
  const BASE='https://raw.githubusercontent.com/leosorge/academy/d1e751beddc55b39027b7c4cee6c8f44bc2ccaf8/index.html';
  const V='assets/vincos.jpg';
  try{
-  let h=await (await fetch(BASE+'?v=4',{cache:'no-store'})).text();
+  let h=await (await fetch(BASE+'?v=5',{cache:'no-store'})).text();
   h=h.replace(/<title>UPDATE — ACADEMY<\/title>/,'<title>Retooling Academy</title>');
   h=h.replace('<span class="update-word">UPDATE</span>\n      <span class="sep">—</span>\n      <span class="academy-word">ACADEMY</span>','<span class="update-word">RETOOLING</span> <span class="academy-word">ACADEMY</span>');
   h=h.replace('.sponsor-block{\n  display:flex;align-items:center;gap:12px;','.sponsor-block{\n  display:flex;flex-direction:column;align-items:flex-start;gap:5px;');
@@ -20,6 +20,8 @@
   h=h.replace(after,p+'  {\n    id:7, nome:"Electric Plazas Economy"');
   for(let n=15;n>=7;n--) h=h.replace('id:'+n+', nome:', 'id:'+(n+1)+', nome:');
   h=h.replace('id:16, nome:"Coming Soon"','id:17, nome:"Coming Soon"');
+  const cables=`  {\n    id:17, nome:"Cavi sottomarini nel Mediterraneo", sponsor:"Unidata",\n    premio:"Attestato UniAkai", data_mod:"16/08/26",\n    logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Unidata_logo_%282002-present%29.png",\n    domande:[\n      {t:"Quale paese coordina il nuovo hub regionale mediterraneo per la sicurezza dei cavi sottomarini?",o:["A) Francia","B) Italia","C) Spagna","D) Grecia"],c:"B",s:"L'Italia coordina l'hub insieme a Grecia, Cipro e Malta."},\n      {t:"Qual è la capacità complessiva dichiarata di Unitirreno?",o:["A) 480 Tbps","B) 624 Tbps","C) 26 Tbps","D) 1.030 Tbps"],c:"B",s:"Unitirreno dichiara 624 Tbps complessivi, con 24 coppie di fibre da 26 Tbps ciascuna."},\n      {t:"Quali città collega il tracciato principale di Unitirreno?",o:["A) Trieste, Bari, Palermo e Cagliari","B) Mazara del Vallo, Roma-Fiumicino, Olbia e Genova","C) Napoli, Livorno, Marsiglia e Barcellona","D) Genova, Milano, Roma e Tunisi"],c:"B",s:"Il tracciato collega Mazara del Vallo a Genova passando per Roma-Fiumicino e Olbia."},\n      {t:"Quale progetto collega paesi UE e Nord Africa con un sistema open access di 8.760 km?",o:["A) BlueMed","B) Medloop","C) Medusa","D) Didon"],c:"C",s:"Medusa è il sistema open access di 8.760 km tra Europa e Nord Africa."},\n      {t:"Perché il collegamento diretto di Unitirreno a Namex è strategico?",o:["A) Per produrre energia dai cavi","B) Per trasformare capacità di transito in traffico effettivamente instradato in Italia","C) Per eliminare le dorsali terrestri","D) Per sostituire tutti gli altri IXP europei"],c:"B",s:"L'approdo su Namex consente di intercettare e scambiare localmente il traffico portato dalle arterie sottomarine."}\n    ]\n  },\n`;
+  h=h.replace('  {\n    id:17, nome:"Coming Soon"',cables+'  {\n    id:18, nome:"Coming Soon"');
   document.open();document.write(h);document.close();
  }catch(e){document.getElementById('loading').innerHTML='Errore: '+e.message;}
 })();
