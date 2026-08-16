@@ -5,19 +5,19 @@
 <script>
 (async()=>{
  const BASE='https://raw.githubusercontent.com/leosorge/academy/d1e751beddc55b39027b7c4cee6c8f44bc2ccaf8/index.html';
- const V='https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png';
+ const V='assets/vincos.jpg';
  try{
-  let h=await (await fetch(BASE+'?v=3',{cache:'no-store'})).text();
+  let h=await (await fetch(BASE+'?v=4',{cache:'no-store'})).text();
   h=h.replace(/<title>UPDATE — ACADEMY<\/title>/,'<title>Retooling Academy</title>');
   h=h.replace('<span class="update-word">UPDATE</span>\n      <span class="sep">—</span>\n      <span class="academy-word">ACADEMY</span>','<span class="update-word">RETOOLING</span> <span class="academy-word">ACADEMY</span>');
   h=h.replace('.sponsor-block{\n  display:flex;align-items:center;gap:12px;','.sponsor-block{\n  display:flex;flex-direction:column;align-items:flex-start;gap:5px;');
-  h=h.replace('width:52px;height:28px;object-fit:contain;\n  filter:brightness(0) invert(1) opacity(0.65);flex-shrink:0;','width:150px;height:58px;object-fit:contain;object-position:left center;\n  filter:none;flex-shrink:0;');
+  h=h.replace('width:52px;height:28px;object-fit:contain;\n  filter:brightness(0) invert(1) opacity(0.65);flex-shrink:0;','width:100%;max-width:180px;height:64px;object-fit:contain;object-position:left center;\n  filter:none;flex-shrink:0;display:block;');
   h=h.replace('id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab"','id:5, nome:"Midjourney", sponsor:"Vincos"');
+  h=h.replace('id:5, nome:"Midjourney", sponsor:"Vincos",\n    premio:"Prompt Kit Oro", data_mod:"16/03/26",\n    logo:"https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png"','id:5, nome:"Midjourney", sponsor:"Vincos",\n    premio:"Prompt Kit Oro", data_mod:"16/03/26",\n    logo:"'+V+'"');
   const p=`  {\n    id:6, nome:"Palestra IA", sponsor:"Vincos",\n    premio:"Allenamento IA", data_mod:"16/08/26",\n    logo:"${V}",\n    domande:[\n      {t:"Cos'è Palestra IA?",o:["A) Un corso universitario di informatica","B) Una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani","C) Un'app per generare immagini AI","D) Un servizio di assistenza clienti automatizzato"],c:"B",s:"Palestra IA è una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani."},\n      {t:"Di cosa è il \\"naturale complemento\\" la piattaforma?",o:["A) Del podcast \\"AI Italia\\"","B) Del libro \\"Esercizi di Intelligenza Aumentata\\"","C) Di un corso su Udemy","D) Di una newsletter su LinkedIn"],c:"B",s:"È il naturale complemento del libro Esercizi di Intelligenza Aumentata."},\n      {t:"Quali strumenti vengono citati per gli esercizi su video AI?",o:["A) Runway e Kling","B) Photoshop e Illustrator","C) Premiere e DaVinci Resolve","D) Notion e Airtable"],c:"A",s:"Gli strumenti citati sono Runway e Kling."},\n      {t:"Quali strumenti vengono citati per l'automazione di workflow e agenti AI?",o:["A) Salesforce e HubSpot","B) n8n e Zapier","C) Slack e Trello","D) Notion e Asana"],c:"B",s:"Gli strumenti citati sono n8n e Zapier."},\n      {t:"Chi è l'ideatore di Palestra IA?",o:["A) Sam Altman","B) Marco Montemagno","C) Vincenzo Cosenza","D) Luciano Floridi"],c:"C",s:"L'ideatore di Palestra IA è Vincenzo Cosenza."}\n    ]\n  },\n`;
   const after='  {\n    id:6, nome:"Electric Plazas Economy"';
   if(!h.includes(after)) throw new Error('Punto di inserimento non trovato');
   h=h.replace(after,p+'  {\n    id:7, nome:"Electric Plazas Economy"');
-  // rinumera solo le missioni successive; Public Speaking (id 4) resta intatto
   for(let n=15;n>=7;n--) h=h.replace('id:'+n+', nome:', 'id:'+(n+1)+', nome:');
   h=h.replace('id:16, nome:"Coming Soon"','id:17, nome:"Coming Soon"');
   document.open();document.write(h);document.close();
