@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="it">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UPDATE — ACADEMY</title></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retooling Academy</title></head>
 <body style="margin:0;background:#030b1a;color:#e8f4ff;font-family:Arial,sans-serif"><div id="loading" style="min-height:100vh;display:grid;place-items:center">Caricamento Academy…</div>
 <script>
 (async()=>{
@@ -8,25 +8,27 @@
   const VINCOS='https://vincos.it/wp-content/uploads/2026/02/vincos-logo.png';
   try{
     let html=await (await fetch(BASE,{cache:'no-store'})).text();
-    // Midjourney by Vincos: cambia solo lo sponsor; logo Vincos già presente nel file base.
-    html=html.replace('id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab"','id:5, nome:"Midjourney by Vincos", sponsor:"Vincos"');
 
-    // Public Speaking CVD non viene modificato: resta identico al file base.
-    const palestra=`  {
-    id:16, nome:"Palestra IA", sponsor:"Vincos",
-    premio:"Allenamento IA", data_mod:"16/08/26",
-    logo:"${VINCOS}",
-    domande:[
-      {t:"Cos'è Palestra IA?",o:["A) Un corso universitario di informatica","B) Una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani","C) Un'app per generare immagini AI","D) Un servizio di assistenza clienti automatizzato"],c:"B",s:"Palestra IA è una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani."},
-      {t:"Di cosa è il \\"naturale complemento\\" la piattaforma?",o:["A) Del podcast \\"AI Italia\\"","B) Del libro \\"Esercizi di Intelligenza Aumentata\\"","C) Di un corso su Udemy","D) Di una newsletter su LinkedIn"],c:"B",s:"È il naturale complemento del libro Esercizi di Intelligenza Aumentata."},
-      {t:"Quali strumenti vengono citati per gli esercizi su video AI?",o:["A) Runway e Kling","B) Photoshop e Illustrator","C) Premiere e DaVinci Resolve","D) Notion e Airtable"],c:"A",s:"Gli strumenti citati sono Runway e Kling."},
-      {t:"Quali strumenti vengono citati per l'automazione di workflow e agenti AI?",o:["A) Salesforce e HubSpot","B) n8n e Zapier","C) Slack e Trello","D) Notion e Asana"],c:"B",s:"Gli strumenti citati sono n8n e Zapier."},
-      {t:"Chi è l'ideatore di Palestra IA?",o:["A) Sam Altman","B) Marco Montemagno","C) Vincenzo Cosenza","D) Luciano Floridi"],c:"C",s:"L'ideatore di Palestra IA è Vincenzo Cosenza."}
-    ]
-  },\n`;
-    const marker='  {\n    id:16, nome:"Coming Soon"';
-    if(!html.includes(marker)) throw new Error('Marker Coming Soon non trovato');
-    html=html.replace(marker,palestra+'  {\n    id:17, nome:"Coming Soon"');
+    // Titolo pagina e intestazione.
+    html=html.replace('<title>UPDATE — ACADEMY</title>','<title>Retooling Academy</title>');
+    html=html.replace('<span class="update-word">UPDATE</span>\n      <span class="sep">—</span>\n      <span class="academy-word">ACADEMY</span>','<span class="update-word">RETOOLING</span>\n      <span class="academy-word">ACADEMY</span>');
+
+    // Logo sopra, nome sponsor sotto. Non applicare filtri che possano rendere invisibili i loghi.
+    html=html.replace(/\.sponsor-block\{[\s\S]*?\}\n\.sponsor-logo\{[\s\S]*?\}\n\.sponsor-info\{[\s\S]*?\}\n\.sponsor-label\{[\s\S]*?\}\n\.sponsor-name\{[\s\S]*?\}/,
+`.sponsor-block{\n  display:flex;flex-direction:column;align-items:flex-start;gap:7px;\n  padding:10px 14px;\n  background:rgba(0,80,180,0.15);\n  border-radius:9px;border:1px solid rgba(0,160,255,0.18);\n  margin-bottom:14px;\n}\n.sponsor-logo{\n  width:120px;height:42px;object-fit:contain;object-position:left center;\n  flex-shrink:0;display:block;\n}\n.sponsor-info{font-family:var(--font-mono);font-size:0.7rem;color:var(--silver);}\n.sponsor-label{display:none;}\n.sponsor-name{color:var(--fiber-3);font-size:0.8rem;}`);
+
+    // Midjourney: nome corto e sponsor Vincos. Public Speaking CVD resta invariato.
+    html=html.replace('id:5, nome:"Midjourney by Vincos", sponsor:"Visionary Lab"','id:5, nome:"Midjourney", sponsor:"Vincos"');
+
+    // Palestra IA va immediatamente dopo Midjourney.
+    const palestra=`  {\n    id:16, nome:"Palestra IA", sponsor:"Vincos",\n    premio:"Allenamento IA", data_mod:"16/08/26",\n    logo:"${VINCOS}",\n    domande:[\n      {t:"Cos'è Palestra IA?",o:["A) Un corso universitario di informatica","B) Una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani","C) Un'app per generare immagini AI","D) Un servizio di assistenza clienti automatizzato"],c:"B",s:"Palestra IA è una piattaforma italiana per allenarsi al prompt design con esercizi pratici quotidiani."},\n      {t:"Di cosa è il \\"naturale complemento\\" la piattaforma?",o:["A) Del podcast \\"AI Italia\\"","B) Del libro \\"Esercizi di Intelligenza Aumentata\\"","C) Di un corso su Udemy","D) Di una newsletter su LinkedIn"],c:"B",s:"È il naturale complemento del libro Esercizi di Intelligenza Aumentata."},\n      {t:"Quali strumenti vengono citati per gli esercizi su video AI?",o:["A) Runway e Kling","B) Photoshop e Illustrator","C) Premiere e DaVinci Resolve","D) Notion e Airtable"],c:"A",s:"Gli strumenti citati sono Runway e Kling."},\n      {t:"Quali strumenti vengono citati per l'automazione di workflow e agenti AI?",o:["A) Salesforce e HubSpot","B) n8n e Zapier","C) Slack e Trello","D) Notion e Asana"],c:"B",s:"Gli strumenti citati sono n8n e Zapier."},\n      {t:"Chi è l'ideatore di Palestra IA?",o:["A) Sam Altman","B) Marco Montemagno","C) Vincenzo Cosenza","D) Luciano Floridi"],c:"C",s:"L'ideatore di Palestra IA è Vincenzo Cosenza."}\n    ]\n  },\n`;
+    const afterMidjourney='  {\n    id:6, nome:"Electric Plazas Economy"';
+    if(!html.includes(afterMidjourney)) throw new Error('Posizione dopo Midjourney non trovata');
+    html=html.replace(afterMidjourney,palestra+afterMidjourney);
+
+    // Coming Soon viene rinumerato per evitare collisione con Palestra IA.
+    html=html.replace('id:16, nome:"Coming Soon"','id:17, nome:"Coming Soon"');
+
     document.open(); document.write(html); document.close();
   }catch(e){
     document.getElementById('loading').innerHTML='<div style="padding:24px;text-align:center">Errore nel caricamento di Academy.<br><small>'+e.message+'</small></div>';
